@@ -1,3 +1,42 @@
+game_state = input()
+x_counter = game_state.count("X")
+o_counter = game_state.count("O")
+_counter = game_state.count("_")
+gs = [x for x in game_state]
+
+def print_game(game):
+    print(f'''---------
+| {game[0]} {game[1]} {game[2]} |
+| {game[3]} {game[4]} {game[5]} |
+| {game[6]} {game[7]} {game[8]} |
+---------''')
+
+print_game(gs)
+
+winner = [[gs[0], gs[1], gs[2]],  # 0 Row
+          [gs[3], gs[4], gs[5]],  # 1 Row
+          [gs[6], gs[7], gs[8]],  # 2 Row
+          [gs[0], gs[4], gs[8]],  # 3 Diagonal
+          [gs[6], gs[4], gs[2]],  # 4 Diagonal
+          [gs[0], gs[3], gs[6]],  # 5 Column
+          [gs[1], gs[4], gs[7]],  # 6 Column
+          [gs[2], gs[5], gs[8]]]  # 7 Column
+'''
+if x_counter == o_counter + 2 or o_counter == x_counter + 2:
+    print("Impossible")
+elif ["X", "X", "X"] in winner and ["O", "O", "O"] in winner:
+    print("Impossible")
+elif ["X", "X", "X"] in winner:
+    print("X wins")
+elif ["O", "O", "O"] in winner:
+    print("O wins")
+elif _counter > 0:
+    print("Game not finished")
+else:
+    print("Draw")
+'''
+
+
 # Replaces the index method. It doesn't return an Error if the item isn't found in a list
 def linear_search(array, to_find):
     for i in range(0, len(array)):
@@ -11,16 +50,7 @@ perma_coords = [["1", "1"], ["1", "2"], ["1", "3"],
 valid_coordinates = [x for x in perma_coords]
 
 # Example game, to be replaced with input() as its value
-kk = input()
-gs = [x for x in kk]
 perm_gs = [x for x in gs]
-
-def print_game(game):
-    print(f'''---------
-    | {game[0]} {game[1]} {game[2]} |
-    | {game[3]} {game[4]} {game[5]} |
-    | {game[6]} {game[7]} {game[8]} |
-    ---------''')
 
 # Obtains the available coordinates, i.e. the unoccupied ones
 def obtain_actual_valid_coordinates(game, valid_coordinates):
@@ -58,15 +88,14 @@ def valid_input(valid_coordinates, perma_coords):
     not_free_space = linear_search(valid_coordinates, user_coords.split()) == -1
     if not_digit:
         print("You should enter numbers!")
-        valid_input(valid_coordinates, perma_coords)
+        return valid_input(valid_coordinates, perma_coords)
     elif not_inside_grid:
         print("Coordinates should be from 1 to 3!")
-        valid_input(valid_coordinates, perma_coords)
+        return valid_input(valid_coordinates, perma_coords)
     elif not_free_space:
         print("This cell is occupied! choose another one!")
-        valid_input(valid_coordinates, perma_coords)
+        return valid_input(valid_coordinates, perma_coords)
     else:
-        print("Nice valid input", user_coords.split())
         return user_coords.split()
 
 def insert_move(coordinates, game):
@@ -76,7 +105,6 @@ def insert_move(coordinates, game):
 
 
 # The occupied coordinates and unoccupied ones are assigned to their respective variables
-print_game(perm_gs)
 valid_and_occupied_coordinates = obtain_actual_valid_coordinates(gs, valid_coordinates)
 valid_coordinates = valid_and_occupied_coordinates[0]
 occupied_coordinates = valid_and_occupied_coordinates[1]

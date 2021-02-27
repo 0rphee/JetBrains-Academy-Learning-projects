@@ -1,8 +1,9 @@
-game_state = input()
-x_counter = game_state.count("X")
-o_counter = game_state.count("O")
-_counter = game_state.count("_")
-gs = [x for x in game_state]
+def linear_search(array, to_find):
+    for i in range(0, len(array)):
+        if array[i] == to_find:
+            return i
+    return -1
+
 
 def print_game(game):
     print(f'''---------
@@ -11,8 +12,8 @@ def print_game(game):
 | {game[6]} {game[7]} {game[8]} |
 ---------''')
 
-print_game(gs)
 
+gs = [x for x in "         "]
 winner = [[gs[0], gs[1], gs[2]],  # 0 Row
           [gs[3], gs[4], gs[5]],  # 1 Row
           [gs[6], gs[7], gs[8]],  # 2 Row
@@ -21,28 +22,8 @@ winner = [[gs[0], gs[1], gs[2]],  # 0 Row
           [gs[0], gs[3], gs[6]],  # 5 Column
           [gs[1], gs[4], gs[7]],  # 6 Column
           [gs[2], gs[5], gs[8]]]  # 7 Column
-'''
-if x_counter == o_counter + 2 or o_counter == x_counter + 2:
-    print("Impossible")
-elif ["X", "X", "X"] in winner and ["O", "O", "O"] in winner:
-    print("Impossible")
-elif ["X", "X", "X"] in winner:
-    print("X wins")
-elif ["O", "O", "O"] in winner:
-    print("O wins")
-elif _counter > 0:
-    print("Game not finished")
-else:
-    print("Draw")
-'''
+print_game(gs)
 
-
-# Replaces the index method. It doesn't return an Error if the item isn't found in a list
-def linear_search(array, to_find):
-    for i in range(0, len(array)):
-        if array[i] == to_find:
-            return i
-    return -1
 perma_coords = [["1", "1"], ["1", "2"], ["1", "3"],
                 ["2", "1"], ["2", "2"], ["2", "3"],
                 ["3", "1"], ["3", "2"], ["3", "3"]]
@@ -52,14 +33,15 @@ valid_coordinates = [x for x in perma_coords]
 # Example game, to be replaced with input() as its value
 perm_gs = [x for x in gs]
 
+
 # Obtains the available coordinates, i.e. the unoccupied ones
 def obtain_actual_valid_coordinates(game, valid_coordinates):
-    # Tracks where's the last free space in the game given
+    # Index of the last free space in the game
     av_space_index_in_valid_coordinates = 0
     # Stores the indeces where there's no "X", nor "O"
     available_spaces_indeces = []
     while av_space_index_in_valid_coordinates != -1:
-        av_space_index_in_valid_coordinates = linear_search(game, "_")
+        av_space_index_in_valid_coordinates = linear_search(game, " ")
         if av_space_index_in_valid_coordinates != -1:
             available_spaces_indeces.append(av_space_index_in_valid_coordinates)
             game[av_space_index_in_valid_coordinates] = "R"
@@ -74,6 +56,7 @@ def obtain_actual_valid_coordinates(game, valid_coordinates):
     for coordinate in ultimate_val_coordinates:
         valid_coordinates.remove(coordinate)
     return ultimate_val_coordinates, valid_coordinates
+
 
 # Analyzes the input to obtain unoccupied coordinates
 def valid_input(valid_coordinates, perma_coords):
@@ -98,16 +81,71 @@ def valid_input(valid_coordinates, perma_coords):
     else:
         return user_coords.split()
 
-def insert_move(coordinates, game):
+
+def insert_move(coordinates, game, x_or_o):
     game_index_to_insert = linear_search(perma_coords, coordinates)
-    game[game_index_to_insert] = "X"
+    game[game_index_to_insert] = x_or_o
     return game
 
 
-# The occupied coordinates and unoccupied ones are assigned to their respective variables
-valid_and_occupied_coordinates = obtain_actual_valid_coordinates(gs, valid_coordinates)
-valid_coordinates = valid_and_occupied_coordinates[0]
-occupied_coordinates = valid_and_occupied_coordinates[1]
+def replace_R(gs):
+    # Index of the last free space in the game
+    R_index = 0
+    # Stores the indeces where there's no "X", nor "O"
+    R_indeces = []
+    while R_index != -1:
+        R_index = linear_search(gs, "R")
+        if R_index != -1:
+            R_indeces.append(R_index)
+            gs[R_index] = " "
+    return gs
 
-# Checks the input given the spaces available in the grid
-print_game(insert_move(valid_input(valid_coordinates, perma_coords), perm_gs))
+
+def check_win(kk):
+    # winning combinations
+    winners = [[kk[0], kk[1], kk[2]],  # 0 Row
+               [kk[3], kk[4], kk[5]],  # 1 Row
+               [kk[6], kk[7], kk[8]],  # 2 Row
+               [kk[0], kk[4], kk[8]],  # 3 Diagonal
+               [kk[6], kk[4], kk[2]],  # 4 Diagonal
+               [kk[0], kk[3], kk[6]],  # 5 Column
+               [kk[1], kk[4], kk[7]],  # 6 Column
+               [kk[2], kk[5], kk[8]]]  # 7 Column
+    white_counter = kk.count(" ")
+
+    if ["X", "X", "X"] in winners:
+        print("X wins")
+        return "finished"
+    elif ["O", "O", "O"] in winners:
+        print("O wins")
+        return "finished"
+    elif white_counter > 0:
+        return "no"
+    else:
+        print("Draw")
+        return "finished"
+
+
+def move(gs, valid_coordinates, turn):
+    # The occupied coordinates and unoccupied ones are assigned to their respective variables
+    valid_and_occupied_coordinates = obtain_actual_valid_coordinates(gs, valid_coordinates)
+    valid_coordinates = valid_and_occupied_coordinates[0]
+    occupied_coordinates = valid_and_occupied_coordinates[1]
+
+    # Checks the input given the spaces available in the grid
+    gs = insert_move(valid_input(valid_coordinates, perma_coords), perm_gs, turn)
+    print_game(gs)
+
+
+won = False
+X_goes = "X"
+while not won:
+    move(gs, valid_coordinates, X_goes)
+    gs = [x for x in perm_gs]
+    valid_coordinates = [x for x in perma_coords]
+    if check_win(gs) == "finished":
+        won = True
+    if X_goes == "X":
+        X_goes = "O"
+    else:
+        X_goes = "X"
