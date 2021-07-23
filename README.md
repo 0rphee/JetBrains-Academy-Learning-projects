@@ -1,2 +1,2 @@
-# JetBrains Academy Learning-projects
+# JetBrains Academy learning projects
 My projects to learn python
